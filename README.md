@@ -16,9 +16,9 @@ Application is built with NodeJs,Serverless.
 There are only 2 lambdas.
 There's only 1 DynamoDB Table *TasksAndLists* holding all the tasks/subtasks/lists with "type" as HASH KEY and "unique_id" as SORT KEY
 
-##Available API-s
+## Available API-s
 
-##TASKS AND SUBTASKS
+## TASKS AND SUBTASKS
 - **GET** /tasks/get  - *Retrieves all the tasks and their subtasks*
 - **GET** /tasks/get/{id}  - *Retrieves a single task with its subtasks*
 - **CREATE** /create  - *Creates tasks or subtasks based on the "type" property*
@@ -40,7 +40,7 @@ There's only 1 DynamoDB Table *TasksAndLists* holding all the tasks/subtasks/lis
 - **DELETE** /delete/{type}/{id} - Deletes a task or subtask based on the type and id provided.
 
 
-##LISTS
+## LISTS
 
 - **GET** /lists/get  - *Retrieves all the lists and their tasks/subtasks*
 - **GET** /lists/get/{id}  - *Retrieves a single list with its tasks/subtasks*
