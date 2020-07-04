@@ -40,8 +40,8 @@ const handler = async (event, context, callback) => {
 
 /**
  * Retrieves a task and its subtasks
- * @param {String} id 
- * @param {String} type 
+ * @param {String} id
+ * @param {String} type
  */
 const getSingleItem = async (id, type, getSubtask = true) => {
   try {
@@ -49,7 +49,7 @@ const getSingleItem = async (id, type, getSubtask = true) => {
       unique_id: id,
       type: type,
     };
-    console.log(params)
+    console.log(params);
     const { Item } = await dynamo.find(params);
     if (type === "task" && getSubtask) {
       let subtasks = await getSubtasks(Item.unique_id);
@@ -89,11 +89,10 @@ const getAllTasks = async () => {
   } catch (error) {}
 };
 
-
 /**
  * Creates Tasks or Subtasks
- * @param {Object} body 
- * @param {String} type 
+ * @param {Object} body
+ * @param {String} type
  */
 const create = async (body, type) => {
   try {
@@ -105,15 +104,18 @@ const create = async (body, type) => {
       completed: body.completed,
       due_date: body.due_date,
     };
-
+    if (type === "task" && body.list_id) {
+      //Reference the task with a list when creating the task
+      item.list_id = body.list_id;
+    }
     if (type === "subtask") {
       if (!body.task_id) {
         throw new Error("Cannot create a subtask without a parent task");
       }
       //When creating a subtask we're checking if the parent is a task or a subtask. Subtasks cannot have other subtasks.
       const parentTask = await getSingleItem(body.task_id, "task", false);
-      if(!parentTask || parentTask.type !== "task") {
-        throw new Error("Cannot create subtasks inside subtasks")
+      if (!parentTask || parentTask.type !== "task") {
+        throw new Error("Cannot create subtasks inside subtasks");
       }
       item.task_id = body.task_id;
     }
@@ -128,9 +130,9 @@ const create = async (body, type) => {
 
 /**
  * Updates Tasks or Subtasks
- * @param {String} id 
- * @param {Object} body 
- * @param {String} type 
+ * @param {String} id
+ * @param {Object} body
+ * @param {String} type
  */
 const update = async (id, body, type) => {
   const item = await getSingleItem(id, type);
@@ -142,12 +144,13 @@ const update = async (id, body, type) => {
       type: type,
       unique_id: id,
     },
-    UpdateExpression: `set title = :t, description = :d, completed = :c, due_date = :dd`,
+    UpdateExpression: `set title = :t, description = :d, completed = :c, due_date = :dd, list_id = :li`,
     ExpressionAttributeValues: {
       ":t": body.title || item.title || " ",
       ":d": body.description || item.description || " ",
       ":c": body.completed || item.completed || " ",
       ":dd": body.due_date || item.due_date || " ",
+      ":li": body.list_id || item.list_id || " "
     },
     ReturnValues: "UPDATED_NEW",
   };
@@ -155,6 +158,8 @@ const update = async (id, body, type) => {
   if (type === "task") {
     params.ExpressionAttributeValues[":st"] = body.subtasks || item.subtasks;
     params.UpdateExpression = params.UpdateExpression + ", subtasks = :st";
+
+
   }
 
   const { Attributes: updateResponse } = await dynamo.updateSingleItem(params);
@@ -167,8 +172,8 @@ const update = async (id, body, type) => {
 
 /**
  * Deletes a Task or a Subtask
- * @param {String} id 
- * @param {String} type 
+ * @param {String} id
+ * @param {String} type
  */
 const deleteTask = async (id, type) => {
   const params = {
@@ -186,7 +191,7 @@ const deleteTask = async (id, type) => {
 
 /**
  * Retrieves all the subtasks associated with the task_id
- * @param {String} taskId 
+ * @param {String} taskId
  */
 const getSubtasks = async (taskId) => {
   const params = {
