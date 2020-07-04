@@ -28,6 +28,7 @@ There's only 1 DynamoDB Table *TasksAndLists* holding all the tasks/subtasks/lis
     "due_date": "Tomorrow",
     "completed":false,
 }`
+> If you're creating a subtask you have to change "type": "subtask" and also attach a "task_id": "unique_id of a task" of an existing task
 > If you're creating a task you can also attach a "list_id" to reference the list where the task belongs to.
 - **EDIT** /edit/{id}  - *Updates a task or a subtask*
 `{"type": "task",
