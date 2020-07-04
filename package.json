@@ -1,0 +1,23 @@
+{
+  "name": "tasks-and-lists",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "docker": "docker-compose up --force-recreate",
+    "dev": "npm install; serverless offline start --stage local",
+    "start": "serverless offline --port 3000"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.596.0",
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0",
+    "serverless-dynamodb-local": "0.2.38",
+    "serverless-offline": "^4.10.6"
+  },
+  "dependencies": {
+    "uuid": "^8.2.0"
+  },
+  "author": "Arlind Xhakoli",
+  "license": "MIT"
+}
